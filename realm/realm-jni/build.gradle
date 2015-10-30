@@ -215,16 +215,12 @@ task downloadCore(group: 'build setup', description: 'Download the latest versio
     }
 }
 
-task compileCore() {
-    group 'build'
-    description 'Compile the core library from source code'
-
-    if (!coreSourcePath) {
-        throw new GradleException('The coreSourcePath is not set.')
-    }
-
+task compileCore(group: 'build setup', description: 'Compile the core library from source code') {
     // Build the library from core source code
     doFirst {
+        if (!coreSourcePath) {
+            throw new GradleException('The coreSourcePath is not set.')
+        }
         exec {
             workingDir = coreSourcePath
             commandLine = [
@@ -251,10 +247,10 @@ task compileCore() {
 
 task deployCore(group: 'build setup', description: 'Deploy the latest version of realm core') {
     dependsOn {
-        if (!coreSourcePath) {
-            downloadCore
-        } else {
+        if (coreSourcePath) {
             compileCore
+        } else {
+            downloadCore
         }
     }
 
